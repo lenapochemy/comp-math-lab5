@@ -6,7 +6,6 @@ import utils.ScannerManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.SortedMap;
 import java.util.function.DoubleFunction;
 
 
@@ -126,6 +125,15 @@ public class Main {
 //                DoubleFunction<Double> more = gaussPolynomial.funcXMoreA;
 //                DoubleFunction<Double> less = gaussPolynomial.funcXLessA;
 //                gauss = x -> (more.apply(x) + less.apply(x) / 2);
+            }
+            case BESSEL -> {
+                BesselPolynomial besselPolynomial = new BesselPolynomial(data[0], data[1], h, finiteDiffs);
+                mainFunction = besselPolynomial.besselFunc;
+                LagrangePolynomial lagrangePolynomial = new LagrangePolynomial(data[0], data[1]);
+                lagrange = lagrangePolynomial.getLagrangeFunc();
+                name = "Многочлен Бесселя";
+                polX = besselPolynomial.besselX;
+                polY = besselPolynomial.besselY;
             }
             default -> {
                 polX = null;

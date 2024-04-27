@@ -27,22 +27,32 @@ public class Helper {
 
     private static void printFiniteDiffs(double[][] finDiff, int n){
         System.out.println("Таблица конечных разностей");
-        String res =  String.format(" %-7s|", "i");
-        res += String.format(" %-7s|", "x");
-        res += String.format(" %-7s|", "y");
+        String res =  String.format(" %-3s|", "i");
+        res += String.format(" %-3s|", " ");
+        res += String.format(" %-10s|", "x");
+        res += String.format(" %-10s|", "y");
         for(int i = 2; i < n; i++){
             if(i == 2){
-                res += String.format(" %-7s|" , ("∆y_i"));
+                res += String.format(" %-10s|" , ("∆y_i"));
             }
-            res += String.format(" %-7s|" , ("∆y^" + (i) + " _i"));
+            res += String.format(" %-10s|" , ("∆y^" + (i) + " _i"));
         }
 
         System.out.println(res);
         int m = n+1;
+        int s;
+        if(n % 2 == 0){
+            s = n/2 - 1;
+        } else s = n/2;
         for(int i = 0; i < n; i++, m--){
-            res = String.format(" %-7s|", i);
+            res = String.format(" %-3s|", i);
+            res += String.format(" %-3s|", i - s);
             for(int j = 0; j < m; j++){
-                res += String.format(" %-7s|", rounding(finDiff[i][j]));
+                String str;
+                if(rounding(finDiff[i][j]) >= 0) {
+                    str = " " + rounding(finDiff[i][j]);
+                } else str = Double.toString(rounding(finDiff[i][j]));
+                res += String.format(" %-10s|", str);
 //                System.out.print(finDiff[i][j] + " ");
             }
             System.out.println(res);
@@ -52,7 +62,7 @@ public class Helper {
 
     public static double rounding(double number){
         BigDecimal help = new BigDecimal(number);
-        help = help.setScale(5, RoundingMode.HALF_UP);
+        help = help.setScale(6, RoundingMode.HALF_UP);
         return help.doubleValue();
     }
 
