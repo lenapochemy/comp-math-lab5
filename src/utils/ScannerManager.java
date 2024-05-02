@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.security.cert.PolicyNode;
+import java.util.*;
 import java.util.function.DoubleFunction;
 
 
@@ -27,63 +27,43 @@ public class ScannerManager {
     public void setFileMode(boolean fileMode){
         this.fileMode = fileMode;
     }
-    //вернет true если ввод с клавиатуры
-//    public boolean sayInputMode(){
-//        boolean flag = false;
-//        while(!flag) {
-//            try {
-//                System.out.print("Вы хотите вводить данные с клавиатуры или из файла? (k/f) ");
-//                String ans = scanner.nextLine().trim();
-//                switch (ans) {
-//                    case "" ->
-//                        throw new NullPointerException();
-//                    case "k" -> {
-//                        flag = true;
-//                        return true;
-//                    }
-//                    case "f" -> {
-//                        flag = true;
-//                        return false;
-//                    }
-//                    default -> throw new IncorrectValueException();
-//                }
-//            } catch (IncorrectValueException | NullPointerException e){
-//                System.out.println("Ответ должен быть \"k\" или \"f\"");
-//            }
-//        }
-//        return flag;
-//    }
 
-    //вернет true если ввод точек
-//    public boolean sayInputValueType(){
-//        boolean flag = false;
-//        while(!flag) {
-//            try {
-//                System.out.print("Задать исходные данные точками или функцией? (1/2)");
-//                String ans = scanner.nextLine().trim();
-//                switch (ans) {
-//                    case "" ->
-//                            throw new NullPointerException();
-//                    case "1" -> {
-//                        flag = true;
-//                        return true;
-//                    }
-//                    case "2" -> {
-//                        flag = true;
-//                        return false;
-//                    }
-//                    default -> throw new IncorrectValueException();
-//                }
-//            } catch (IncorrectValueException | NullPointerException e){
-//                System.out.println("Ответ должен быть \"1\" или \"2\"");
+    public InputType sayInputValueType(){
+        boolean flag = false;
+        while(!flag) {
+            try {
+                System.out.println("Выберите один вариант:");
+                System.out.println("\t1. Ввод данных точками");
+                System.out.println("\t2. Ввод данных точками через интервалами");
+                System.out.println("\t3. Ввод данных через функцию");
+                String ans = scanner.nextLine().trim();
+                switch (ans) {
+                    case "" ->
+                            throw new NullPointerException();
+                    case "1" -> {
+                        flag = true;
+                        return InputType.FROM_DOTS;
+                    }
+                    case "2" -> {
+                        flag = true;
+                        return InputType.FROM_INTERVALS;
+                    }
+                    case "3" -> {
+                        flag = true;
+                        return InputType.FROM_FUNC;
+                    }
+                    default -> throw new IncorrectValueException();
+                }
+            } catch (IncorrectValueException | NullPointerException e){
+                System.out.println("Ответ должен быть \"1\", \"2\" или \"3\"");
 //            } catch (NoSuchElementException e){
 //                System.out.println("Данные не найдены в файле");
 //                System.exit(0);
-//            }
-//        }
-//        return flag;
-//    }
-//
+            }
+        }
+        return InputType.FROM_FUNC;
+    }
+
     public boolean sayType(String first, String second){
         boolean flag = false;
         while(!flag) {
@@ -165,103 +145,87 @@ public class ScannerManager {
     }
 
 
-//    public FileWriter sayFileToWrite(){
-//        String sFile;
-//        FileWriter writer = null;
-//        while(writer == null){
-//            try{
-//                System.out.println("Введите путь к файлу:");
-//                sFile = scanner.nextLine().trim();
-//                if(fileMode) System.out.println(sFile);
-//                if(sFile.isEmpty()) throw new NullPointerException();
-//                File file = new File(sFile);
-//                if(file.exists() && !file.canWrite()) throw new FileException();
-//                writer = new FileWriter(file);
-//            } catch (NullPointerException e){
-//                System.out.println("Путь не может быть пустым");
-//            } catch (FileException e){
-//                System.out.println("В файл невозможно записать");
-//            } catch (IOException e){
-//                System.out.println("Файл не найден");
-//            } catch (NoSuchElementException e){
-//                System.out.println("Данные не найдены в файле");
-//                System.exit(0);
-//            }
-//        }
-//        return writer;
-//    }
 
-    public Polynomials sayMethodFromTwo(){
-        boolean flag = false;
-        while(!flag) {
-            try {
-                System.out.println("Выберите метод:\n\t1. Многочлен Лагранжа\n\t2. Многочлен Ньютона с разделенными разностями");
-                String ans = scanner.nextLine().trim();
-                if(fileMode) System.out.println(ans);
-                switch (ans) {
-                    case "" ->
-                            throw new NullPointerException();
-                    case "1" -> {
-                        flag = true;
-                        return Polynomials.LAGRANGE;
-                    }
-                    case "2" -> {
-                        flag = true;
-                        return Polynomials.NEWTON;
-                    }
-                    default -> throw new IncorrectValueException();
-                }
-            } catch (IncorrectValueException | NullPointerException e){
-                System.out.println("Ответ должен быть положительным числом, не большим 5");
-                if(fileMode) errorEnd();
-            } catch (NoSuchElementException e){
-                System.out.println("Введите значение");
-//                System.exit(0);
+    public Polynomials sayMethod(boolean diffIntervals, int n){
+        String string = "Выберите метод \n";
+        int count;
+        boolean stirling = false;
+        if(diffIntervals){ // разное расстояние
+            string += """
+                        \t1. Многочлен Лагранжа
+                        \t2. Многочлен Ньютона с разделенными разностями""";
+            count = 2;
+        } else { // одинаковое расстояние
+            count = 4;
+            if(n % 2 == 0){ //четное
+                string += """
+                        \t1. Многочлен Лагранжа
+                        \t2. Многочлен Ньютона с разделенными разностями
+                        \t3. Многочлен Гаусса
+                        \t4. Многочлен Бесселя""";
+            } else { // не четное
+                string += """
+                        \t1. Многочлен Лагранжа
+                        \t2. Многочлен Ньютона с разделенными разностями
+                        \t3. Многочлен Гаусса
+                        \t4. Многочлен Стрилинга""";
+                stirling = true;
             }
         }
-        return null;
+
+        return sayPolynomials(string, count, stirling);
     }
 
 
-    public Polynomials sayMethod(){
+    public Polynomials sayPolynomials(String string, int count, boolean stirling){
         boolean flag = false;
         while(!flag) {
             try {
-                System.out.println("Выберите метод:\n\t1. Многочлен Лагранжа\n\t2. Многочлен Ньютона с разделенными разностями\n\t" +
-                        "3. Многочлен Гаусса\n\t4. Схема Стрилинга\n\t5. Схема Бесселя");
+                System.out.println(string);
                 String ans = scanner.nextLine().trim();
                 if(fileMode) System.out.println(ans);
-                switch (ans) {
-                    case "" ->
-                            throw new NullPointerException();
-                    case "1" -> {
-                        flag = true;
-                        return Polynomials.LAGRANGE;
+                if(count == 4){
+                    switch (ans) {
+                        case "" -> throw new NullPointerException();
+                        case "1" -> {
+                            flag = true;
+                            return Polynomials.LAGRANGE;
+                        }
+                        case "2" -> {
+                            flag = true;
+                            return Polynomials.NEWTON;
+                        }
+                        case "3" -> {
+                            flag = true;
+                            return Polynomials.GAUSS;
+                        }
+                        case "4" -> {
+                            flag = true;
+                            if(stirling) {
+                                return Polynomials.STIRLING;
+                            } else {
+                                return Polynomials.BESSEL;
+                            }
+                        }
                     }
-                    case "2" -> {
-                        flag = true;
-                        return Polynomials.NEWTON;
+                } else {
+                    switch (ans) {
+                        case "" -> throw new NullPointerException();
+                        case "1" -> {
+                            flag = true;
+                            return Polynomials.LAGRANGE;
+                        }
+                        case "2" -> {
+                            flag = true;
+                            return Polynomials.NEWTON;
+                        }
                     }
-                    case "3" -> {
-                        flag = true;
-                        return Polynomials.GAUSS;
-                    }
-                    case "4" -> {
-                        flag = true;
-                        return Polynomials.STIRLING;
-                    }
-                    case "5" -> {
-                        flag = true;
-                        return Polynomials.BESSEL;
-                    }
-                    default -> throw new IncorrectValueException();
                 }
-            } catch (IncorrectValueException | NullPointerException e){
-                System.out.println("Ответ должен быть положительным числом, не большим 5");
-                if(fileMode) errorEnd();
+//            } catch (IncorrectValueException | NullPointerException e){
+//                System.out.println("Ответ должен быть положительным числом, не большим 5");
+//                if(fileMode) errorEnd();
             } catch (NoSuchElementException e){
                 System.out.println("Введите значение");
-//                System.exit(0);
             }
         }
         return null;
@@ -270,6 +234,7 @@ public class ScannerManager {
     public double[][] sayInitialDotsData(){
         int n = sayN();
         double[][] data = new double[2][n];
+        Map<Double, Double> map = new TreeMap<>();
         System.out.println("Введите исходные точки парами (x, y) через пробел");
         for(int i = 0; i < n; i++){
             String[] num = new String[2];
@@ -301,9 +266,14 @@ public class ScannerManager {
                 }
             }
 //            map.put(Double.parseDouble(num[0]), Double.parseDouble(num[1]));
-//            map.put(x, y);
-            data[0][i] = x;
-            data[1][i] = y;
+            map.put(x, y);
+
+        }
+        int i = 0;
+        for(Map.Entry<Double, Double> entry : map.entrySet()){
+            data[0][i] = entry.getKey();
+            data[1][i] = entry.getValue();
+            i++;
         }
         return data;
     }

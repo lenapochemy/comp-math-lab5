@@ -2,37 +2,36 @@ package polynomials;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Vector;
 import java.util.function.DoubleFunction;
 
 public class NewtonPolynomial {
     private final double[] x ,y ;
     private final int n;
-    //    private double x_0;
-    private double[] newtonX, newtonValue;
-    private DoubleFunction<Double> newtonFunc;
-    double minX, maxX;
+    private final Vector<Double> newtonX, newtonValue;
+    private final DoubleFunction<Double> newtonFunc;
 
     public NewtonPolynomial(double[] x, double[] y){
         this.x = x;
         this.y = y;
         this.n = x.length;
-//        this.x_0 = x_0;
         this.newtonFunc = solve();
 
-
-        minX = Collections.min(Arrays.stream(x).boxed().toList());
-        maxX = Collections.max(Arrays.stream(x).boxed().toList());
-//        maxX = Double.valueOf(Arrays.stream(x).max().toString());
-        int s = (int) ((maxX - minX + 0.2) / 0.1);
-        newtonX = new double[s];
-        newtonValue = new double[s];
-        int j = 0;
-        for(double i = minX - 0.1; i <= maxX + 0.1; i+= 0.1, j++){
-            newtonX[j] = rounding(i);
-            newtonValue[j] = rounding(newtonFunc.apply(i));
-//            System.out.println("i = " + i + " x = " + lagrangeX[j] + " y = " + lagrangeValue[j]);
+        newtonX = new Vector<>();
+        newtonValue = new Vector<>();
+        double step = 0.1;
+        double minH = x[0];
+        for(int i = 0; i < n; i++){
+            if(minH < x[i]){
+                minH = x[i];
+            }
+        }
+        if(minH < step){
+            step = minH/2;
+        }
+        for(double i = x[0] - 0.1; i < x[n-1] + 0.2; i+= step){
+            newtonX.add(rounding(i));
+            newtonValue.add(rounding(newtonFunc.apply(i)));
         }
     }
 
@@ -73,11 +72,11 @@ public class NewtonPolynomial {
         return func;
     }
 
-    public double[] getNewtonX() {
+    public Vector<Double> getNewtonX() {
         return newtonX;
     }
 
-    public double[] getNewtonValue() {
+    public Vector<Double> getNewtonValue() {
         return newtonValue;
     }
 

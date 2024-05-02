@@ -3,6 +3,7 @@ package polynomials;
 
 import utils.Helper;
 
+import java.util.Vector;
 import java.util.function.DoubleFunction;
 
 public class StirlingPolynomial {
@@ -11,8 +12,8 @@ public class StirlingPolynomial {
     private final int n;
     private final double a, h;
     private final double[][] finDiff;
-    public DoubleFunction<Double> stirlingFunc;
-    public double[] stirlX, stirlY;
+    public final DoubleFunction<Double> stirlingFunc;
+    public final Vector<Double> stirlX, stirlY;
 
 
     public StirlingPolynomial(double[] x, double[] y, double h, double[][] finDiff) {
@@ -24,15 +25,16 @@ public class StirlingPolynomial {
         this.finDiff = finDiff;
         this.stirlingFunc = solve();
 
-
-        double minX = x[0], maxX = x[n-1];
-        int s = (int) ((maxX + 0.2 - minX) / 0.1);
-        stirlX = new double[s];
-        stirlY = new double[s];
-        int j = 0;
-        for(double i = minX - 0.1; i <= (maxX + 0.1); i+= 0.1, j++){
-            stirlX[j] = i;
-            stirlY[j] = stirlingFunc.apply(i);
+//        double minX = x[0], maxX = x[n-1];
+        stirlX = new Vector<>();
+        stirlY = new Vector<>();
+        double step = 0.1;
+        if(h < step){
+            step = h/2;
+        }
+        for(double i = x[0] - 0.1; i < x[n-1] + 0.2; i+= step){
+            stirlX.add(i);
+            stirlY.add(stirlingFunc.apply(i));
         }
     }
 
@@ -55,8 +57,8 @@ public class StirlingPolynomial {
             int finalK = k;
             int finalN = n / 2;
             func = x -> prevFunc.apply(x) +
-                    finalTempFunc.apply(x) * t.apply(x) * (finDiff[-finalK + finalN][2*finalK] + finDiff[-(finalK-1) + finalN][2*finalK]) / (2 * Helper.factorial(2 * finalK - 1 ) ) +
-                    finalTempFunc.apply(x) * Math.pow(t.apply(x), 2) * finDiff[-finalK + finalN][2*finalK + 1] / Helper.factorial(2 * finalK);
+                    finalTempFunc.apply(x) * (t.apply(x) * (finDiff[-finalK + finalN][2*finalK] + finDiff[-(finalK-1) + finalN][2*finalK]) / (2 * Helper.factorial(2 * finalK - 1 ) ) +
+                     Math.pow(t.apply(x), 2) * finDiff[-finalK + finalN][2*finalK + 1] / Helper.factorial(2 * finalK));
         }
 
         return func;

@@ -2,42 +2,41 @@ package polynomials;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Vector;
 import java.util.function.DoubleFunction;
 
 public class LagrangePolynomial {
 
     private final double[] x ,y ;
     private final int n;
-//    private double x_0;
-    private double[] lagrangeX, lagrangeValue;
-    private DoubleFunction<Double> lagrangeFunc;
+    private final Vector<Double> lagrangeX, lagrangeValue;
+    private final DoubleFunction<Double> lagrangeFunc;
     double minX, maxX;
 
     public LagrangePolynomial(double[] x, double[] y){
         this.x = x;
         this.y = y;
         this.n = x.length;
-//        this.x_0 = x_0;
         this.lagrangeFunc = solve();
 
-//        for(int i = 0; i < n; i++){
-//            lagrangeValue[i] = lagrangeFunc.apply(x[i]);
-//        }
-//        minX = Double.valueOf(Arrays.stream(x).min().toString());
-        minX = Collections.min(Arrays.stream(x).boxed().toList());
-        maxX = Collections.max(Arrays.stream(x).boxed().toList());
-//        maxX = Double.valueOf(Arrays.stream(x).max().toString());
-        int s = (int) ((maxX + 0.2 - minX) / 0.1);
-        lagrangeX = new double[s];
-        lagrangeValue = new double[s];
-        int j = 0;
-        for(double i = minX - 0.1; i <= (maxX + 0.1); i+= 0.1, j++){
-            lagrangeX[j] = rounding(i);
-            lagrangeValue[j] = rounding(lagrangeFunc.apply(i));
-//            System.out.println("i = " + i + " x = " + lagrangeX[j] + " y = " + lagrangeValue[j]);
+        minX = x[0];
+        maxX = x[n-1];
+        lagrangeX = new Vector<>();
+        lagrangeValue = new Vector<>();
+        double step = 0.1;
+        double minH = x[0];
+        for(int i = 0; i < n; i++){
+            if(minH < x[i]){
+                minH = x[i];
+            }
+        }
+        if(minH < step){
+            step = minH/2;
+        }
+        for(double i = minX - 0.1; i < maxX + 0.2; i+= step){
+//            System.out.println("x = " + rounding(i) + " y = " + rounding(lagrangeFunc.apply(i)));
+            lagrangeX.add(rounding(i));
+            lagrangeValue.add(rounding(lagrangeFunc.apply(i)));
         }
 
     }
@@ -69,14 +68,14 @@ public class LagrangePolynomial {
         return interpolationFunc;
     }
 
-    public double getLagrangeFuncValue(double x_0){
-        return lagrangeFunc.apply(x_0);
-    }
+//    public double getLagrangeFuncValue(double x_0){
+//        return lagrangeFunc.apply(x_0);
+//    }
 
-    public double[] getLagrangeValue() {
+    public Vector<Double> getLagrangeValue() {
         return lagrangeValue;
     }
-    public double[] getLagrangeX(){
+    public Vector<Double> getLagrangeX(){
         return lagrangeX;
     }
 

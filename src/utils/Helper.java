@@ -5,6 +5,17 @@ import java.math.RoundingMode;
 
 public class Helper {
 
+    public static double checkDiffInterval(double[] x){
+        int n = x.length;
+        double diff = rounding(Math.abs(x[0] - x[1]));
+        for(int i = 1; i < n-1; i++){
+            if(rounding(Math.abs(x[i] - x[i+1])) != diff){
+                return -1;
+            }
+        }
+        return diff;
+    }
+
 
     public static double[][] finiteDiffs(double[] x, double[] y){
         int n = x.length;
