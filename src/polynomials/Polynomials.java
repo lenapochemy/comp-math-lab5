@@ -5,5 +5,6 @@ public enum Polynomials {
     NEWTON,
     GAUSS,
     STIRLING,
-    BESSEL
+    BESSEL,
+    ALL
 }

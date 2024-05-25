@@ -6,6 +6,8 @@ import utils.Helper;
 import java.util.Vector;
 import java.util.function.DoubleFunction;
 
+import static java.lang.Math.abs;
+
 public class StirlingPolynomial {
 
     private final double[] x ,y ;
@@ -25,7 +27,6 @@ public class StirlingPolynomial {
         this.finDiff = finDiff;
         this.stirlingFunc = solve();
 
-//        double minX = x[0], maxX = x[n-1];
         stirlX = new Vector<>();
         stirlY = new Vector<>();
         double step = 0.1;
@@ -36,6 +37,11 @@ public class StirlingPolynomial {
             stirlX.add(i);
             stirlY.add(stirlingFunc.apply(i));
         }
+    }
+
+    public boolean checkT(double x){
+        double t = (x - a) / h;
+        return abs(t) <= 0.25;
     }
 
 

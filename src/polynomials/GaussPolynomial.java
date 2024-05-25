@@ -40,8 +40,10 @@ public class GaussPolynomial {
 
     public double gaussFunc(double num){
         if(num > a){
+            System.out.println("Используется первая итнерполяционная формула Гаусса (x>a)");
             return funcXMoreA.apply(num);
         } else {
+            System.out.println("Используется вторая итнерполяционная формула Гаусса (x<a)");
             return funcXLessA.apply(num);
         }
     }

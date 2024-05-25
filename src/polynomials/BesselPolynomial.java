@@ -5,6 +5,8 @@ import utils.Helper;
 import java.util.Vector;
 import java.util.function.DoubleFunction;
 
+import static java.lang.Math.abs;
+
 public class BesselPolynomial {
 
     private final double[] x ,y ;
@@ -38,6 +40,10 @@ public class BesselPolynomial {
         }
     }
 
+    public boolean checkT(double x){
+        double t = (x - a) / h;
+        return abs(t) >= 0.25 && abs(t) <= 0.75;
+    }
 
     public DoubleFunction<Double> solve(){
         DoubleFunction<Double> t = x -> (x - a) / h;

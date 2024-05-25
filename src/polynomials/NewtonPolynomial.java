@@ -1,7 +1,7 @@
 package polynomials;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import utils.Helper;
+
 import java.util.Vector;
 import java.util.function.DoubleFunction;
 
@@ -30,16 +30,11 @@ public class NewtonPolynomial {
             step = minH/2;
         }
         for(double i = x[0] - 0.1; i < x[n-1] + 0.2; i+= step){
-            newtonX.add(rounding(i));
-            newtonValue.add(rounding(newtonFunc.apply(i)));
+            newtonX.add(Helper.rounding(i));
+            newtonValue.add(Helper.rounding(newtonFunc.apply(i)));
         }
     }
 
-    private double rounding(double number){
-        BigDecimal help = new BigDecimal(number);
-        help = help.setScale(5, RoundingMode.HALF_UP);
-        return help.doubleValue();
-    }
 
     private double separatedDiffs(int i, int k){
         if(k == 0){

@@ -6,9 +6,6 @@ import polynomials.Polynomials;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.security.cert.PolicyNode;
 import java.util.*;
 import java.util.function.DoubleFunction;
 
@@ -153,22 +150,23 @@ public class ScannerManager {
         if(diffIntervals){ // разное расстояние
             string += """
                         \t1. Многочлен Лагранжа
-                        \t2. Многочлен Ньютона с разделенными разностями""";
+                        \t2. Многочлен Ньютона с разделенными разностями
+                        \t3. Все методы""";
             count = 2;
         } else { // одинаковое расстояние
             count = 4;
             if(n % 2 == 0){ //четное
                 string += """
                         \t1. Многочлен Лагранжа
-                        \t2. Многочлен Ньютона с разделенными разностями
-                        \t3. Многочлен Гаусса
-                        \t4. Многочлен Бесселя""";
+                        \t2. Многочлен Гаусса
+                        \t3. Многочлен Бесселя
+                        \t4. Все методы""";
             } else { // не четное
                 string += """
                         \t1. Многочлен Лагранжа
-                        \t2. Многочлен Ньютона с разделенными разностями
-                        \t3. Многочлен Гаусса
-                        \t4. Многочлен Стрилинга""";
+                        \t2. Многочлен Гаусса
+                        \t3. Многочлен Стрилинга
+                        \t4. Все методы""";
                 stirling = true;
             }
         }
@@ -193,19 +191,19 @@ public class ScannerManager {
                         }
                         case "2" -> {
                             flag = true;
-                            return Polynomials.NEWTON;
-                        }
-                        case "3" -> {
-                            flag = true;
                             return Polynomials.GAUSS;
                         }
-                        case "4" -> {
+                        case "3" -> {
                             flag = true;
                             if(stirling) {
                                 return Polynomials.STIRLING;
                             } else {
                                 return Polynomials.BESSEL;
                             }
+                        }
+                        case "4" -> {
+                            flag = true;
+                            return Polynomials.ALL;
                         }
                     }
                 } else {
@@ -219,10 +217,14 @@ public class ScannerManager {
                             flag = true;
                             return Polynomials.NEWTON;
                         }
+                        case "3" -> {
+                            flag = true;
+                            return Polynomials.ALL;
+                        }
                     }
                 }
-//            } catch (IncorrectValueException | NullPointerException e){
-//                System.out.println("Ответ должен быть положительным числом, не большим 5");
+            } catch (NullPointerException e){
+                System.out.println("Ответ должен быть положительным числом, не большим 5");
 //                if(fileMode) errorEnd();
             } catch (NoSuchElementException e){
                 System.out.println("Введите значение");
@@ -237,7 +239,7 @@ public class ScannerManager {
         Map<Double, Double> map = new TreeMap<>();
         System.out.println("Введите исходные точки парами (x, y) через пробел");
         for(int i = 0; i < n; i++){
-            String[] num = new String[2];
+            String[] num;
             double x = 0,y = 0;
             String sNum;
             boolean flag = true;
@@ -348,27 +350,19 @@ public class ScannerManager {
         return num;
     }
 
-    public double sayH(){
-        double h = -1;
-        while(h < 0){
-            h = sayDoubleNumber("значение шага между точками");
-        }
-        return h;
-    }
-
     public int sayN(){
         int num = 0;
         String sNum;
-        while (num < 2  || num > 12){
+        while (num < 2){
             try {
-                System.out.print("Введите количество точек от 2 до 12: ");
+                System.out.print("Введите количество точек: ");
                 sNum = scanner.nextLine().trim();
                 if(fileMode) System.out.println(sNum);
                 if(sNum.isEmpty()) throw new NullPointerException();
                 num = Integer.parseInt(sNum);
-                if(num < 2  || num > 12) throw new IncorrectValueException();
+                if(num < 2) throw new IncorrectValueException();
             } catch (IncorrectValueException e){
-                System.out.println("Значение количества точек должно быть положительным числои из промежутка [2;12]");
+                System.out.println("Значение количества точек должно быть положительным числом больше 2");
                 if(fileMode) errorEnd();
             } catch (NullPointerException e){
                 System.out.println("Количество точек не может быть пустым");

@@ -1,7 +1,7 @@
 package polynomials;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import utils.Helper;
+
 import java.util.Vector;
 import java.util.function.DoubleFunction;
 
@@ -35,17 +35,13 @@ public class LagrangePolynomial {
         }
         for(double i = minX - 0.1; i < maxX + 0.2; i+= step){
 //            System.out.println("x = " + rounding(i) + " y = " + rounding(lagrangeFunc.apply(i)));
-            lagrangeX.add(rounding(i));
-            lagrangeValue.add(rounding(lagrangeFunc.apply(i)));
+            lagrangeX.add(Helper.rounding(i));
+            lagrangeValue.add(Helper.rounding(lagrangeFunc.apply(i)));
         }
 
     }
 
-    private double rounding(double number){
-        BigDecimal help = new BigDecimal(number);
-        help = help.setScale(5, RoundingMode.HALF_UP);
-        return help.doubleValue();
-    }
+
 
     private DoubleFunction<Double> solve(){
         DoubleFunction<Double> interpolationFunc = x -> 0.0;
@@ -68,9 +64,6 @@ public class LagrangePolynomial {
         return interpolationFunc;
     }
 
-//    public double getLagrangeFuncValue(double x_0){
-//        return lagrangeFunc.apply(x_0);
-//    }
 
     public Vector<Double> getLagrangeValue() {
         return lagrangeValue;
